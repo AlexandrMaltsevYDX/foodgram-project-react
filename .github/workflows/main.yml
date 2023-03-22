@@ -31,7 +31,7 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Copy docs
-        uses: garygrossgarten/github-action-scp@release
+        uses: appleboy/ssh-action@v0.1.8
         with:
           local: docs
           remote: /${{ secrets.USERNAME }}/projects/foodgram/docs/
