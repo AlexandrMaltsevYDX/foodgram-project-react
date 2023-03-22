@@ -96,9 +96,22 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
+          # you are in home/biba
           script: |
-            pwd
+            pwd 
             ls -a
-            ls -a projects/
-
-
+            ls -a projects/foodgram/infra/
+            rm -f projects/foodgram/infra/.env
+            touch projects/foodgram/infra/.env
+            ls -a projects/foodgram/infra/
+            cd projects/foodgram/infra/
+            ls -a
+            echo DEBUG=${{ secrets.DEBUG }} >> .env
+            echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
