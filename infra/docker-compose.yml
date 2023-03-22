@@ -1,17 +1,62 @@
-version: '3.3'
+version: '3.8'
+
+
+volumes:
+  static_dir:
+  media_dir:
+  postgres_data:
+
+
 services:
 
   frontend:
+    container_name: front
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
+
+  db:
+    container_name: db
+    image: postgres:13.0-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  backend:
+    container_name: backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: always
+    command: >
+      bash -c "python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn --bind 0:8000 fg_back.wsgi"
+    volumes:
+      - static_dir:/backend/static/
+      - media_dir:/backend/media/
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+
   nginx:
-    image: nginx:1.19.3
+    container_name: proxy
+    image: nginx:1.23.3-alpine
+    restart: always
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_dir:/etc/nginx/html/static/
+      - media_dir:/etc/nginx/html/media/
+    depends_on:
+      - backend
+      - frontend
