@@ -27,8 +27,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          source: "infra/docker-compose.yml, infra/nginx.conf"
-          target: "projects/foodgram/infra"
+          source: "infra"
+          target: "projects/foodgram"
 
       - name: Copy docs
         uses: appleboy/scp-action@master
@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           source: "docs"
-          target: "projects/foodgram/docs/"
+          target: "projects/foodgram"
 
   build_push_backend_to_DockerHub:
     name: Building back image and pushing it to Docker Hub
