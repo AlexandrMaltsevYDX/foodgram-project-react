@@ -99,6 +99,6 @@ jobs:
           script: |
             pwd
             ls -a
-            cd projects/foodgram/
+            ls -a projects/
 
 
