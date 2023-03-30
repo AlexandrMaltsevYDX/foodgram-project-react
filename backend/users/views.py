@@ -6,6 +6,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from fg_back.pagination import DefaultPaginator
 # from api.pagination import LimitPageNumberPagination
 from .serializers import SubscribtionSerializer
 from .models import Subscribtion
@@ -14,7 +15,7 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
-    # pagination_class = LimitPageNumberPagination
+    pagination_class = DefaultPaginator
 
     @action(detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
