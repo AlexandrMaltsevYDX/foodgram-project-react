@@ -4,6 +4,7 @@ from rest_framework import serializers
 from api.models import Recipe
 from .models import Subscribtion
 from drf_extra_fields.fields import Base64ImageField
+from api.utils.serializer_utils import LIMIT_NUMBER_NESTED_RECIPES
 
 User = get_user_model()
 
@@ -60,7 +61,7 @@ class CropRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ("id", "name", "image", "cooking_time")
-        read_only_fields = ("id", "name", "image", "cooking_time")
+        read_only_fields = fields
 
 
 class SubscribtionSerializer(serializers.ModelSerializer):
@@ -93,10 +94,10 @@ class SubscribtionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get("request")
-        limit = request.GET.get("recipes_limit")
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit:
-            queryset = queryset[: int(limit)]
+        limit = LIMIT_NUMBER_NESTED_RECIPES
+        if request.GET.get("recipes_limit"):
+            limit = request.GET.get("recipes_limit")
+        queryset = Recipe.objects.filter(author=obj.author)[: int(limit)]
         return CropRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
