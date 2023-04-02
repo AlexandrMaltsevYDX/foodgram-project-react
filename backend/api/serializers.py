@@ -4,7 +4,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from api.models import Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
-from utils.serializer_utils import ingeredient_validation
+from .utils.serializer_utils import ingeredient_validation
 
 
 class TagSerializer(serializers.ModelSerializer):

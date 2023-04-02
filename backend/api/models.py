@@ -4,9 +4,9 @@ from .utils.models_utils import (
     CHAR_FIELD_DEFOULT_LEN,
     MIN_COOCKING_TIME,
     MIN_INGREDIENTS_NUMBER,
-    ColorValidator,
+    color_validation,
 )
-from .models import User
+from users.models import User
 
 
 class Ingredient(models.Model):
@@ -47,7 +47,7 @@ class Tag(models.Model):
     color = models.CharField(
         max_length=7,
         unique=True,
-        validators=(ColorValidator(),),
+        validators=[color_validation],
         verbose_name="Цвет в HEX",
     )
     slug = models.SlugField(
