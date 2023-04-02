@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from fg_back.pagination import DefaultPaginator
+
 # from api.pagination import LimitPageNumberPagination
 from .serializers import SubscribtionSerializer
 from .models import Subscribtion
@@ -15,10 +16,14 @@ User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
+    """Вьюсет юзера."""
+
     pagination_class = DefaultPaginator
 
     @action(detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
+        """Добаление ендпоинта для подписки."""
+
         user = request.user
         author = get_object_or_404(User, id=id)
 
@@ -41,6 +46,8 @@ class CustomUserViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def del_subscribe(self, request, id=None):
+        """Добавление ендпоинта для удаления подписик."""
+
         user = request.user
         author = get_object_or_404(User, id=id)
         if user == author:
@@ -59,6 +66,8 @@ class CustomUserViewSet(UserViewSet):
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
+        """Добавление ендпоинта для просмотра подписок."""
+
         user = request.user
         queryset = Subscribtion.objects.filter(user=user)
         pages = self.paginate_queryset(queryset)

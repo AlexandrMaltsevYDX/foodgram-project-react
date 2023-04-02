@@ -8,18 +8,24 @@ from utils.serializer_utils import ingeredient_validation
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор Тэгов."""
+
     class Meta:
         model = Tag
         fields = "__all__"
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор Ингредиентов."""
+
     class Meta:
         model = Ingredient
         fields = "__all__"
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
+    """Сериализатор Количества ингредиентов в рецепте."""
+
     id = serializers.ReadOnlyField(source="ingredient.id")
     name = serializers.ReadOnlyField(source="ingredient.name")
     measurement_unit = serializers.ReadOnlyField(
@@ -38,6 +44,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор Рецептов."""
+
     image = Base64ImageField()
     tags = TagSerializer(read_only=True, many=True)
     author = UserSerializer(read_only=True)
@@ -66,21 +74,32 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        user = self.context.get("view").request.user
-        if user.is_anonymous:
+        """Возвращает queryset избранных рецептов пользователя."""
+        try:
+            request = self.context.get("request")
+            user = request.user
+            if user.is_anonymous:
+                return False
+            return Recipe.objects.filter(
+                favorites__user=user, id=obj.id
+            ).exists()
+        except Exception:
             return False
-        return Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get("request")
-        if (not request) or (not request.user):
+        """Возвращает queryset рецептов находящихся в карзине."""
+        try:
+            request = self.context.get("request")
+            user = request.user
+            if user.is_anonymous:
+                return False
+            return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
+        except Exception:
             return False
-        user = request.user
-        if user.is_anonymous:
-            return False
-        return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
 
     def create_ingredients(self, ingredients, recipe):
+        """Создает ингредиенты для рецептов с их количеством."""
+
         ingredient_amounts = [
             IngredientAmount(
                 recipe=recipe,
@@ -92,6 +111,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(ingredient_amounts)
 
     def create(self, validated_data):
+        """создает рецепт."""
+
         image = validated_data.pop("image")
         ingredients_data = validated_data.pop("ingredients")
         recipe = Recipe.objects.create(image=image, **validated_data)
@@ -101,6 +122,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
+        """изменяет рецепт."""
+
         instance.image = validated_data.get("image", instance.image)
         instance.name = validated_data.get("name", instance.name)
         instance.text = validated_data.get("text", instance.text)

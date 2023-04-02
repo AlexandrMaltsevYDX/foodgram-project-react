@@ -5,10 +5,18 @@ from api.models import Recipe, User
 
 
 class IngredientSearchFilter(SearchFilter):
+    """фильтрсет для Ингридиетнов.
+    Фильтрация по названию ингридиента.
+    """
+
     search_param = "name"
 
 
 class AuthorAndTagFilter(FilterSet):
+    """фильтрсет для Рецептов.
+    Фильтрация по автору и тэгам.
+    """
+
     tags = filters.AllValuesMultipleFilter(field_name="tags__slug")
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
     is_favorited = filters.BooleanFilter(method="filter_is_favorited")
@@ -17,11 +25,19 @@ class AuthorAndTagFilter(FilterSet):
     )
 
     def filter_is_favorited(self, queryset, name, value):
+        """Фильтрация рецептов.
+        Возвращает только избранные рецепты.
+        """
+
         if value and not self.request.user.is_anonymous:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
+        """Фильтрация рецептов.
+        Возвращает только рецепты находящиеся в корзине.
+        """
+
         if value and not self.request.user.is_anonymous:
             return queryset.filter(cart__user=self.request.user)
         return queryset

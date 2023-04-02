@@ -3,15 +3,19 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Модель Юзера."""
+
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ("username",)
         verbose_name = "User"
         verbose_name_plural = "Users"
 
 
 class Subscribtion(models.Model):
+    """Модель подписок."""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -26,7 +30,7 @@ class Subscribtion(models.Model):
     )
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ("id",)
         verbose_name = "Subscribtion"
         verbose_name_plural = "Subscribtions"
         constraints = [

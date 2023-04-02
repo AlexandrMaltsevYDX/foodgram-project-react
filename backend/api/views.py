@@ -9,7 +9,10 @@ from api.models import (
     Recipe,
     Tag,
 )
-from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from api.permissions import (
+    IsAdminOrReadOnly,
+    IsOwnerOrReadOnly,
+)
 from api.serializers import (
     IngredientSerializer,
     RecipeSerializer,
@@ -27,14 +30,16 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
-    # permission_classes = (AllowAny,)
+    """Вьюсет Тэгов."""
+
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class IngredientsViewSet(ReadOnlyModelViewSet):
-    # permission_classes = (AllowAny,)
+    """Вьюсет Ингредиентов."""
+
     permission_classes = (IsAdminOrReadOnly,)
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
@@ -43,6 +48,8 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """Вьюсет Рецетов."""
+
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     filter_class = AuthorAndTagFilter
@@ -58,6 +65,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def favorite(self, request, pk=None):
+        """Добавляет ендпоинт favorite."""
+
         if request.method == "GET":
             return self.add_obj(Favorite, request.user, pk)
         elif request.method == "DELETE":
@@ -70,6 +79,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def shopping_cart(self, request, pk=None):
+        """Добавляет ендпоинт карзина."""
+
         if request.method == "GET":
             return self.add_obj(Cart, request.user, pk)
         elif request.method == "DELETE":
@@ -80,11 +91,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
+        """Добавляет ендпоинт выгрузить из карзины."""
+
         user = request.user.name
         response = HttpResponse(user)
         return response
 
     def add_obj(self, model, user, pk):
+        """Добавляет рецепт в список."""
+
         if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {"errors": "Рецепт уже добавлен в список"},
@@ -96,6 +111,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_obj(self, model, user, pk):
+        """Удаляет рецепт из списка."""
+
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()

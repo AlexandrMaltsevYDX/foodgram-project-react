@@ -3,7 +3,12 @@ from django.shortcuts import get_object_or_404
 from ..models import Ingredient
 
 
+LIMIT_NUMBER_NESTED_RECIPES = 3
+
+
 def ingeredient_validation(ingredients):
+    """Функция валидации ингреиентов."""
+
     if not ingredients:
         raise serializers.ValidationError(
             {"ingredients": "Нужен хоть один ингридиент для рецепта"}
