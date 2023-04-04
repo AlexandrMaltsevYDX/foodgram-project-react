@@ -1,12 +1,14 @@
 from django.core import validators
 from django.db import models
+
+from users.models import User
+
 from .utils.models_utils import (
     CHAR_FIELD_DEFOULT_LEN,
     MIN_COOCKING_TIME,
     MIN_INGREDIENTS_NUMBER,
     color_validation,
 )
-from users.models import User
 
 
 class Ingredient(models.Model):
@@ -99,7 +101,7 @@ class Recipe(models.Model):
         validators=(
             validators.MinValueValidator(
                 MIN_COOCKING_TIME,
-                message="Минимальное время приготовления 1 минута",
+                message=f"Минимальное время - {MIN_COOCKING_TIME} минута",
             ),
         ),
         verbose_name="Время приготовления",

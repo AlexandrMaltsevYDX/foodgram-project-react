@@ -71,7 +71,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_obj(Favorite, request.user, pk)
         elif request.method == "DELETE":
             return self.delete_obj(Favorite, request.user, pk)
-        return None
 
     @action(
         detail=True,
@@ -99,15 +98,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def add_obj(self, model, user, pk):
         """Добавляет рецепт в список."""
-
-        if model.objects.filter(user=user, recipe__id=pk).exists():
+        obj, created = model.objects.get_or_create(user=user, recipe__id=pk)
+        if created:
             return Response(
                 {"errors": "Рецепт уже добавлен в список"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
-        serializer = CropRecipeSerializer(recipe)
+        serializer = CropRecipeSerializer(obj)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_obj(self, model, user, pk):

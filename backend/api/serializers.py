@@ -73,29 +73,29 @@ class RecipeSerializer(serializers.ModelSerializer):
             "cooking_time",
         )
 
+    def request_user_guard_block(self):
+        """Guard block если request пустой, если юзер не авторизован"""
+        request = self.context.get("request")
+        if request and request.user.is_anonymous:
+            return False, False
+        return request.user, True
+
     def get_is_favorited(self, obj):
-        """Возвращает queryset избранных рецептов пользователя."""
-        try:
-            request = self.context.get("request")
-            user = request.user
-            if user.is_anonymous:
-                return False
-            return Recipe.objects.filter(
-                favorites__user=user, id=obj.id
-            ).exists()
-        except Exception:
-            return False
+        """Возвращает true если рецепт в избранных рецептов пользователя."""
+        user, guard = self.request_user_guard_block()
+        return (
+            guard
+            and Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
-        """Возвращает queryset рецептов находящихся в карзине."""
-        try:
-            request = self.context.get("request")
-            user = request.user
-            if user.is_anonymous:
-                return False
-            return Recipe.objects.filter(cart__user=user, id=obj.id).exists()
-        except Exception:
-            return False
+        """Возвращает  true если рецепт в карзине."""
+        user, guard = self.request_user_guard_block()
+
+        return (
+            guard
+            and Recipe.objects.filter(cart__user=user, id=obj.id).exists()
+        )
 
     def create_ingredients(self, ingredients, recipe):
         """Создает ингредиенты для рецептов с их количеством."""

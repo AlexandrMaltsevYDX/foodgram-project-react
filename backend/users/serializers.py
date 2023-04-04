@@ -6,8 +6,7 @@ from .models import Subscribtion
 from drf_extra_fields.fields import Base64ImageField
 from api.utils.serializer_utils import LIMIT_NUMBER_NESTED_RECIPES
 from .utils.serializers_utils import BASE_FIELDS_SET_USER
-
-User = get_user_model()
+from .models import User
 
 
 class UserCreateSerializer(UserCreateSerializer):
