@@ -1,12 +1,14 @@
-from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from api.models import Recipe
-from .models import Subscribtion
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from api.utils.serializer_utils import LIMIT_NUMBER_NESTED_RECIPES
+
+from api.models import Recipe
+from api.utils.serializer_utils import (
+    LIMIT_NUMBER_NESTED_RECIPES,
+    request_user_guard_block,
+)
+from .models import User, Subscribtion
 from .utils.serializers_utils import BASE_FIELDS_SET_USER
-from .models import User
 
 
 class UserCreateSerializer(UserCreateSerializer):
@@ -36,11 +38,15 @@ class UserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         """Получение инофрмаии о подписках."""
-
-        user = self.context.get("request").user
-        if user.is_anonymous:
-            return False
-        return Subscribtion.objects.filter(user=user, author=obj.id).exists()
+        # request_user_guard_block
+        user, guard = request_user_guard_block(self)
+        return (
+            guard
+            and Subscribtion.objects.filter(
+                user=user,
+                author=obj.id,
+            ).exists()
+        )
 
 
 class CropRecipeSerializer(serializers.ModelSerializer):
@@ -81,10 +87,14 @@ class SubscribtionSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         """Получение информации о подписках."""
-
-        return Subscribtion.objects.filter(
-            user=obj.user, author=obj.author
-        ).exists()
+        user, guard = request_user_guard_block(self)
+        return (
+            guard
+            and Subscribtion.objects.filter(
+                user=obj.user,
+                author=obj.author,
+            ).exists()
+        )
 
     def get_recipes(self, obj):
         """Получение рецептов."""

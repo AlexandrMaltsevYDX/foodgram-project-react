@@ -4,7 +4,10 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from api.models import Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
-from .utils.serializer_utils import ingeredient_validation
+from .utils.serializer_utils import (
+    ingeredient_validation,
+    request_user_guard_block,
+)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -73,28 +76,27 @@ class RecipeSerializer(serializers.ModelSerializer):
             "cooking_time",
         )
 
-    def request_user_guard_block(self):
-        """Guard block если request пустой, если юзер не авторизован"""
-        request = self.context.get("request")
-        if request and request.user.is_anonymous:
-            return False, False
-        return request.user, True
-
     def get_is_favorited(self, obj):
         """Возвращает true если рецепт в избранных рецептов пользователя."""
-        user, guard = self.request_user_guard_block()
+        user, guard = request_user_guard_block(self)
         return (
             guard
-            and Recipe.objects.filter(favorites__user=user, id=obj.id).exists()
+            and Recipe.objects.filter(
+                favorites__user=user,
+                id=obj.id,
+            ).exists()
         )
 
     def get_is_in_shopping_cart(self, obj):
         """Возвращает  true если рецепт в карзине."""
-        user, guard = self.request_user_guard_block()
+        user, guard = request_user_guard_block(self)
 
         return (
             guard
-            and Recipe.objects.filter(cart__user=user, id=obj.id).exists()
+            and Recipe.objects.filter(
+                cart__user=user,
+                id=obj.id,
+            ).exists()
         )
 
     def create_ingredients(self, ingredients, recipe):

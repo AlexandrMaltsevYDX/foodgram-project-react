@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
@@ -7,12 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from fg_back.pagination import DefaultPaginator
-
-# from api.pagination import LimitPageNumberPagination
+from .models import User, Subscribtion
 from .serializers import SubscribtionSerializer
-from .models import Subscribtion
-
-User = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):

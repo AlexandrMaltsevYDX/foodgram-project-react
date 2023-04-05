@@ -21,3 +21,11 @@ def ingeredient_validation(ingredients):
                 "Ингридиенты должны " "быть уникальными"
             )
         ingredient_list.append(ingredient)
+
+
+def request_user_guard_block(obj):
+    """Guard block если request пустой, если юзер не авторизован"""
+    request = obj.context.get("request")
+    if request and request.user.is_anonymous:
+        return False, False
+    return request.user, True

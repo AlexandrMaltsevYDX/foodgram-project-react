@@ -1,32 +1,20 @@
-from api.filters import (
-    AuthorAndTagFilter,
-    IngredientSearchFilter,
-)
-from api.models import (
-    Cart,
-    Favorite,
-    Ingredient,
-    Recipe,
-    Tag,
-)
-from api.permissions import (
-    IsAdminOrReadOnly,
-    IsOwnerOrReadOnly,
-)
+from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticated
+
+from fg_back.pagination import DefaultPaginator
+from users.serializers import CropRecipeSerializer
+from api.models import Cart, Favorite, Ingredient, Recipe, Tag
+from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from api.filters import AuthorAndTagFilter, IngredientSearchFilter
 from api.serializers import (
     IngredientSerializer,
     RecipeSerializer,
     TagSerializer,
 )
-from fg_back.pagination import DefaultPaginator
-from users.serializers import CropRecipeSerializer
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
@@ -84,7 +72,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.add_obj(Cart, request.user, pk)
         elif request.method == "DELETE":
             return self.delete_obj(Cart, request.user, pk)
-        return None
 
     @action(
         detail=False, methods=["get"], permission_classes=[IsAuthenticated]

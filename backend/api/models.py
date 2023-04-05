@@ -2,7 +2,6 @@ from django.core import validators
 from django.db import models
 
 from users.models import User
-
 from .utils.models_utils import (
     CHAR_FIELD_DEFOULT_LEN,
     MIN_COOCKING_TIME,
