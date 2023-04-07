@@ -15,7 +15,11 @@ class CustomUserViewSet(UserViewSet):
 
     pagination_class = DefaultPaginator
 
-    @action(detail=True, permission_classes=[IsAuthenticated])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated],
+    )
     def subscribe(self, request, id=None):
         """Добаление ендпоинта для подписки."""
 

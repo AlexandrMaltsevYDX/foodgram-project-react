@@ -75,6 +75,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "text",
             "cooking_time",
         )
+        partial = True
 
     def get_is_favorited(self, obj):
         """Возвращает true если рецепт в избранных рецептов пользователя."""
@@ -116,7 +117,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         """создает рецепт."""
 
         image = validated_data.pop("image")
-        ingredients_data = validated_data.pop("ingredients")
+        # ingredients_data = validated_data.pop("ingredients")
+        print(validated_data)
+        print(self.initial_data["ingredients"])
+        ingredients_data = self.initial_data["ingredients"]
         recipe = Recipe.objects.create(image=image, **validated_data)
         tags_data = self.initial_data.get("tags")
         recipe.tags.set(tags_data)
@@ -136,6 +140,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         tags_data = self.initial_data.get("tags")
         instance.tags.set(tags_data)
         IngredientAmount.objects.filter(recipe=instance).all().delete()
-        self.create_ingredients(validated_data.get("ingredients"), instance)
+        self.create_ingredients(self.initial_data.get("ingredients"), instance)
         instance.save()
         return instance

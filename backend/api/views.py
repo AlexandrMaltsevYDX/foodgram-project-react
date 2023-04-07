@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -15,6 +15,7 @@ from api.serializers import (
     RecipeSerializer,
     TagSerializer,
 )
+from .utils.donload_csv import generate_csv_data
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
@@ -49,26 +50,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=["get", "delete"],
+        methods=["post", "delete"],
         permission_classes=[IsAuthenticated],
     )
     def favorite(self, request, pk=None):
         """Добавляет ендпоинт favorite."""
 
-        if request.method == "GET":
+        if request.method == "POST":
             return self.add_obj(Favorite, request.user, pk)
         elif request.method == "DELETE":
             return self.delete_obj(Favorite, request.user, pk)
 
     @action(
         detail=True,
-        methods=["get", "delete"],
+        methods=["post", "delete"],
         permission_classes=[IsAuthenticated],
     )
     def shopping_cart(self, request, pk=None):
         """Добавляет ендпоинт карзина."""
 
-        if request.method == "GET":
+        if request.method == "POST":
             return self.add_obj(Cart, request.user, pk)
         elif request.method == "DELETE":
             return self.delete_obj(Cart, request.user, pk)
@@ -78,14 +79,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Добавляет ендпоинт выгрузить из карзины."""
-
-        user = request.user.name
-        response = HttpResponse(user)
-        return response
+        list_recipes = Cart.objects.filter(user=request.user)
+        return generate_csv_data(request, list_recipes)
 
     def add_obj(self, model, user, pk):
         """Добавляет рецепт в список."""
-        obj, created = model.objects.get_or_create(user=user, recipe__id=pk)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        obj, created = model.objects.get_or_create(user=user, recipe=recipe)
         if created:
             return Response(
                 {"errors": "Рецепт уже добавлен в список"},
@@ -96,8 +96,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def delete_obj(self, model, user, pk):
         """Удаляет рецепт из списка."""
-
-        obj = model.objects.filter(user=user, recipe__id=pk)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        obj = model.objects.filter(user=user, recipe=recipe)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

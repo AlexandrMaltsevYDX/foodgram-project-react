@@ -11,25 +11,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = (
+#     "django-insecure-0&w+a(c*6nzvdhu*7jj1c==zx2iu_^f2aogve#1v#o!-v8(s8x"
+# )
 SECRET_KEY = (
-    "django-insecure-0&w+a(c*6nzvdhu*7jj1c==zx2iu_^f2aogve#1v#o!-v8(s8x"
+    os.getenv("SECRET_KEY")
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    ".localhost",
-    "127.0.0.1",
-    "[::1]",
-    "127.0.0.1",
-    "158.160.56.76",
-]
+# ALLOWED_HOSTS = [
+#     ".localhost",
+#     "127.0.0.1",
+#     "[::1]",
+#     "127.0.0.1",
+#     "158.160.56.76",
+# ]
+
+ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS")]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "api.apps.ApiConfig",
     "users.apps.UsersConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -40,7 +46,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
-    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
