@@ -177,7 +177,7 @@ class Favorite(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.name} - {self.recipe}"
+        return f"{self.user} - {self.recipe}"
 
 
 class Cart(models.Model):
