@@ -111,6 +111,9 @@ class Recipe(models.Model):
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
 
+    def __str__(self):
+        return self.name
+
 
 class IngredientAmount(models.Model):
     """Модель Количества ингредиента в рецепте для связи многие ко многим ."""
@@ -172,6 +175,9 @@ class Favorite(models.Model):
                 name="unique favorite recipe for user",
             )
         ]
+
+    def __str__(self):
+        return f"{self.name} - {self.recipe}"
 
 
 class Cart(models.Model):

@@ -39,3 +39,6 @@ class Subscribtion(models.Model):
                 name="unique follow",
             )
         ]
+
+    def str(self):
+        return f"{self.user} on {self.author}"
