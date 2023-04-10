@@ -56,7 +56,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         source="ingredientamount_set",
         many=True,
         read_only=True,
-        validators=[ingeredient_validation],
+        validators=[
+            ingeredient_validation,
+        ],
     )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -118,9 +120,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         image = validated_data.pop("image")
         # ingredients_data = validated_data.pop("ingredients")
-        print(validated_data)
-        print(self.initial_data["ingredients"])
+        # print(validated_data)
+        # print(self.initial_data["ingredients"])
         ingredients_data = self.initial_data["ingredients"]
+        ingeredient_validation(ingredients_data)
         recipe = Recipe.objects.create(image=image, **validated_data)
         tags_data = self.initial_data.get("tags")
         recipe.tags.set(tags_data)

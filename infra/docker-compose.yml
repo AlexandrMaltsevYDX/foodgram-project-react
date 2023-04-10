@@ -11,7 +11,10 @@ services:
 
   frontend:
     container_name: front
-    image: alexandrmaltsev/foodgram_front:latest
+    # image: alexandrmaltsev/foodgram_front:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -26,7 +29,10 @@ services:
 
   backend:
     container_name: backend
-    image: alexandrmaltsev/foodgram_back:latest
+    # image: alexandrmaltsev/foodgram_back:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     restart: always
     command: >
       bash -c "python manage.py makemigrations && python manage.py migrate &&

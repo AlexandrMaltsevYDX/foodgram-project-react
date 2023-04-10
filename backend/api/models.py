@@ -131,7 +131,7 @@ class IngredientAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         validators=(
             validators.MinValueValidator(
-                MIN_INGREDIENTS_NUMBER,
+                1,
                 message="Минимальное количество ингридиентов 1",
             ),
         ),
@@ -206,3 +206,6 @@ class Cart(models.Model):
                 name="unique cart user",
             )
         ]
+
+    def __str__(self):
+        return f"{self.user} - {self.recipe}"

@@ -41,9 +41,37 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    filter_class = AuthorAndTagFilter
+    # filter_backends = (AuthorAndTagFilter,)
     permission_classes = [IsOwnerOrReadOnly]
     pagination_class = DefaultPaginator
+
+    def get_queryset(self):
+        queryset = self.queryset
+        tags = self.request.query_params.getlist("tags")
+        if tags:
+            queryset = queryset.filter(tags__slug__in=tags)
+
+        author = self.request.query_params.get("author")
+        if author:
+            queryset = queryset.filter(author=author)
+
+        if self.request.user.is_anonymous:
+            return queryset
+
+        is_in_cart: str = self.request.query_params.get("is_in_shopping_cart")
+        if is_in_cart == "1":
+            queryset = queryset.filter(cart__user=self.request.user)
+
+        elif is_in_cart == "0":
+            queryset = queryset.exclude(cart__user=self.request.user)
+
+        is_favorit = self.request.query_params.get("is_favorited")
+        if is_favorit == "1":
+            queryset = queryset.filter(favorites__user=self.request.user)
+        if is_favorit == "0":
+            queryset = queryset.exclude(favorites__user=self.request.user)
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -83,21 +111,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return generate_csv_data(request, list_recipes)
 
     def add_obj(self, model, user, pk):
-        """Добавляет рецепт в список."""
-        recipe = get_object_or_404(Recipe, pk=pk)
-        obj, created = model.objects.get_or_create(user=user, recipe=recipe)
-        if created:
+        if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {"errors": "Рецепт уже добавлен в список"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        serializer = CropRecipeSerializer(obj)
+        recipe = get_object_or_404(Recipe, id=pk)
+        model.objects.create(user=user, recipe=recipe)
+        serializer = CropRecipeSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_obj(self, model, user, pk):
-        """Удаляет рецепт из списка."""
-        recipe = get_object_or_404(Recipe, pk=pk)
-        obj = model.objects.filter(user=user, recipe=recipe)
+        obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
