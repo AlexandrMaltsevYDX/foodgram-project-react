@@ -9,8 +9,8 @@ from fg_back.pagination import DefaultPaginator
 from users.serializers import CropRecipeSerializer
 from api.models import Cart, Favorite, Ingredient, Recipe, Tag
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
-# from api.filters import AuthorAndTagFilter, IngredientSearchFilter
-from api.filters import IngredientSearchFilter
+from api.filters import AuthorAndTagFilter, IngredientSearchFilter
+# from api.filters import IngredientSearchFilter
 from api.serializers import (
     IngredientSerializer,
     RecipeSerializer,
@@ -42,38 +42,38 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    # filter_backends = (AuthorAndTagFilter,)
+    filter_class = AuthorAndTagFilter
     permission_classes = [IsOwnerOrReadOnly]
     pagination_class = DefaultPaginator
 
-    def get_queryset(self):
-        queryset = self.queryset
-        tags = self.request.query_params.getlist("tags")
-        # tags_slugs = self.request.query_params.getlist("tags")
-        if tags:
-            queryset = queryset.filter(tags__slug__in=tags)
+    # def get_queryset(self):
+    #     queryset = self.queryset
+    #     tags = self.request.query_params.getlist("tags")
+    #     # tags_slugs = self.request.query_params.getlist("tags")
+    #     if tags:
+    #         queryset = queryset.filter(tags__slug__in=tags)
 
-        author = self.request.query_params.get("author")
-        if author:
-            queryset = queryset.filter(author=author)
+    #     author = self.request.query_params.get("author")
+    #     if author:
+    #         queryset = queryset.filter(author=author)
 
-        if self.request.user.is_anonymous:
-            return queryset
+    #     if self.request.user.is_anonymous:
+    #         return queryset
 
-        is_in_cart: str = self.request.query_params.get("is_in_shopping_cart")
-        if is_in_cart == "1":
-            queryset = queryset.filter(cart__user=self.request.user)
+    #     is_in_cart: str = self.request.query_params.get("is_in_shopping_cart")
+    #     if is_in_cart == "1":
+    #         queryset = queryset.filter(cart__user=self.request.user)
 
-        elif is_in_cart == "0":
-            queryset = queryset.exclude(cart__user=self.request.user)
+    #     elif is_in_cart == "0":
+    #         queryset = queryset.exclude(cart__user=self.request.user)
 
-        is_favorit = self.request.query_params.get("is_favorited")
-        if is_favorit == "1":
-            queryset = queryset.filter(favorites__user=self.request.user)
-        if is_favorit == "0":
-            queryset = queryset.exclude(favorites__user=self.request.user)
+    #     is_favorit = self.request.query_params.get("is_favorited")
+    #     if is_favorit == "1":
+    #         queryset = queryset.filter(favorites__user=self.request.user)
+    #     if is_favorit == "0":
+    #         queryset = queryset.exclude(favorites__user=self.request.user)
 
-        return queryset
+    #     return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
