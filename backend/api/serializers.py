@@ -130,7 +130,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_ingredients(ingredients_data, recipe)
         return recipe
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Recipe, validated_data):
         """изменяет рецепт."""
 
         instance.image = validated_data.get("image", instance.image)

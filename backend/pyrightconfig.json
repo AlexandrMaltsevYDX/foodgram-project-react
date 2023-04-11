@@ -1,0 +1,31 @@
+{
+    "include": [
+        "./**/*.py"
+    ],
+    "exclude": [
+        "**/migrations/*.py"
+    ],
+    "venv": "../venv/",
+    "python": {
+        "analysis": {
+            "autoSearchPaths": true,
+            "useLibraryCodeForTypes": true
+        },
+        "autoComplete": {
+            "extraPaths": ["./"]
+        },
+        "diagnostics": {
+            "reportMissingModuleSource": true
+        },
+        "typeCheckingMode": "strict",
+        "executionEnvironments": {
+            "main": {
+                "root": "."
+            }
+        }
+    },
+    "reportDuplicateModuleNames": true,
+    "skipFunctionArgumentChecks": true,
+    "useLibraryCodeForTypes": true,
+    "watchForSourceChanges": true
+}
