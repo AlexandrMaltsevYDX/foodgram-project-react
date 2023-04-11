@@ -9,7 +9,8 @@ from fg_back.pagination import DefaultPaginator
 from users.serializers import CropRecipeSerializer
 from api.models import Cart, Favorite, Ingredient, Recipe, Tag
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
-from api.filters import AuthorAndTagFilter, IngredientSearchFilter
+# from api.filters import AuthorAndTagFilter, IngredientSearchFilter
+from api.filters import IngredientSearchFilter
 from api.serializers import (
     IngredientSerializer,
     RecipeSerializer,
