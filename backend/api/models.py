@@ -95,6 +95,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         verbose_name="Теги",
+        related_name="recipes",
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=(
