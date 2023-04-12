@@ -6,7 +6,8 @@ from api.models import Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
 from .utils.serializer_utils import (
     ingeredient_validation,
-    recipe_unic_validation,
+    recipe_unic_validation_create,
+    recipe_unic_validation_update,
     request_user_guard_block,
 )
 
@@ -122,7 +123,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients_data = self.initial_data["ingredients"]
         author = self.context.get("request").user
         ingeredient_validation(ingredients_data)
-        recipe_unic_validation(author, Recipe, validated_data)
+        recipe_unic_validation_create(author, Recipe, validated_data)
         recipe = Recipe.objects.create(
             image=image,
             author=author,
@@ -136,7 +137,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance: Recipe, validated_data):
         """изменяет рецепт."""
         author = self.context.get("request").user
-        recipe_unic_validation(author, Recipe, validated_data)
+        recipe_unic_validation_update(author, Recipe, validated_data)
         instance.image = validated_data.get("image", instance.image)
         instance.name = validated_data.get("name", instance.name)
         instance.text = validated_data.get("text", instance.text)

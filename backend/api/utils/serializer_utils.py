@@ -28,13 +28,25 @@ def ingeredient_validation(ingredients):
             )
 
 
-def recipe_unic_validation(author, model, validated_data):
+def recipe_unic_validation_create(author, model, validated_data):
     if model.objects.filter(
         author=author,
         name=validated_data["name"],
     ).exists():
         raise serializers.ValidationError("Рецепты должны быть ункальными")
 
+
+def recipe_unic_validation_update(author, model, validated_data):
+    if (
+        model.objects.filter(
+            name=validated_data["name"],
+        )
+        .exclude(
+            author=author,
+        )
+        .exists()
+    ):
+        raise serializers.ValidationError("Рецепты должны быть ункальными")
 
 
 def request_user_guard_block(obj):
