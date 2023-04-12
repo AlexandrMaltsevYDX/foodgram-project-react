@@ -28,6 +28,15 @@ def ingeredient_validation(ingredients):
             )
 
 
+def recipe_unic_validation(author, model, validated_data):
+    if model.objects.filter(
+        author=author,
+        name=validated_data["name"],
+    ).exists():
+        raise serializers.ValidationError("Рецепты должны быть ункальными")
+
+
+
 def request_user_guard_block(obj):
     """Guard block если request пустой, если юзер не авторизован"""
     request = obj.context.get("request")
