@@ -11,20 +11,20 @@ def ingeredient_validation(ingredients):
 
     if not ingredients:
         raise serializers.ValidationError(
-            {"ingredients": "Нужен хоть один ингридиент для рецепта"}
+            "Нужен хоть один ингридиент для рецепта"
         )
     ingredient_list = []
     for ingredient_item in ingredients:
         ingredient = get_object_or_404(Ingredient, id=ingredient_item["id"])
         if ingredient in ingredient_list:
             raise serializers.ValidationError(
-                {"ingredients": "Ингредиенты должны быть уникальными"}
+                "Ингредиенты должны быть уникальными"
             )
         ingredient_list.append(ingredient)
         amount = ingredient_item["amount"]
         if int(amount) <= 0:
             raise serializers.ValidationError(
-                {"amount": "Количество ингредиента должно быть больше нуля!"}
+                "Количество ингредиента должно быть больше нуля!"
             )
 
 
