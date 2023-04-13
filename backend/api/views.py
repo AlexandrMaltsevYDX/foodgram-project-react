@@ -57,7 +57,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(author=author)
 
         if self.request.user.is_anonymous:
-            return queryset
+            return queryset.distinct()
 
         is_in_cart = self.request.query_params.get("is_in_shopping_cart")
         if is_in_cart == "1":

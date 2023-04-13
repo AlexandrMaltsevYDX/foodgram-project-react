@@ -1,11 +1,9 @@
 version: '3.8'
 
-
 volumes:
   static_dir:
   media_dir:
   postgres_data:
-
 
 services:
 
